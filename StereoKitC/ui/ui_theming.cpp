@@ -909,6 +909,7 @@ mesh_t ui_gen_quadrant_mesh(ui_corner_ rounded_corners, float corner_radius, uin
 ///////////////////////////////////////////
 
 mesh_t theme_mesh_button       = nullptr;
+mesh_t theme_mesh_button_round = nullptr;
 mesh_t theme_mesh_input        = nullptr;
 mesh_t theme_mesh_plane        = nullptr;
 mesh_t theme_mesh_panel        = nullptr;
@@ -981,6 +982,7 @@ void ui_theme_visuals_update() {
 	bool needs_id = theme_mesh_button == nullptr;
 
 	_ui_gen_quadrant_mesh(&theme_mesh_button,       ui_corner_all,    skui_settings.rounding, 8, false, lathe_button, _countof(lathe_button));
+	_ui_gen_quadrant_mesh(&theme_mesh_button_round, ui_corner_all,    skui_settings.padding + text_style_get_char_height(ui_get_text_style())/2.0f, 8, false, lathe_button, _countof(lathe_button));
 	_ui_gen_quadrant_mesh(&theme_mesh_input,        ui_corner_all,    skui_settings.rounding, 8, false, lathe_input,  _countof(lathe_input ));
 	_ui_gen_quadrant_mesh(&theme_mesh_plane,        ui_corner_all,    skui_settings.rounding - (skui_settings.margin - skui_settings.gutter), 8, false, lathe_plane, _countof(lathe_plane));
 
@@ -1042,7 +1044,7 @@ void ui_theme_visuals_assign() {
 	ui_set_element_visual(ui_vis_default,              theme_mesh_panel,        theme_mat_opaque);
 	ui_set_element_visual(ui_vis_button,               theme_mesh_button,       theme_mat_transparent);
 	ui_set_element_visual(ui_vis_toggle,               theme_mesh_button,       theme_mat_transparent);
-	ui_set_element_visual(ui_vis_button_round,         theme_mesh_button,       theme_mat_transparent);
+	ui_set_element_visual(ui_vis_button_round,         theme_mesh_button_round, theme_mat_transparent);
 	ui_set_element_visual(ui_vis_input,                theme_mesh_input,        theme_mat_transparent);
 	ui_set_element_visual(ui_vis_panel,                theme_mesh_plane,        theme_mat_opaque_same_z);
 	ui_set_element_visual(ui_vis_window_head,          theme_mesh_panel_top,    theme_mat_opaque);
@@ -1063,6 +1065,7 @@ void ui_theme_visuals_assign() {
 
 void ui_theme_visuals_release() {
 	mesh_release(theme_mesh_button      ); theme_mesh_button       = nullptr;
+	mesh_release(theme_mesh_button_round); theme_mesh_button_round = nullptr;
 	mesh_release(theme_mesh_input       ); theme_mesh_input        = nullptr;
 	mesh_release(theme_mesh_plane       ); theme_mesh_plane        = nullptr;
 	mesh_release(theme_mesh_panel       ); theme_mesh_panel        = nullptr;
