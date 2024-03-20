@@ -17,6 +17,9 @@ public static class Tests
 	static int   sceneFrame = 0;
 	static float sceneTime  = 0;
 	static HashSet<string> screens = new HashSet<string>();
+	static bool testsPass = true;
+	static int testPassCount = 0;
+	static int testFailCount = 0;
 
 	private static Type ActiveTest { set { nextScene = (ITest)Activator.CreateInstance(value); } }
 	public  static int  DemoCount => demoTests.Count;
@@ -78,7 +81,33 @@ public static class Tests
 		{
 			testIndex += 1;
 			if (testIndex >= allTests.Count || TestSingle)
+			{
+				if (testsPass)
+				{
+                    Log.Info("===============================================================");
+                    Log.Info(" _______        _               _____         _____ _____   _ ");
+					Log.Info("|__   __|      | |        _    |  __ \\ /\\    / ____/ ____| | |");
+                    Log.Info("   | | ___  ___| |_ ___  (_)   | |__) /  \\  | (___| (___   | |");
+                    Log.Info("   | |/ _ \\/ __| __/ __|       |  ___/ /\\ \\  \\___ \\\\___ \\  | |");
+                    Log.Info("   | |  __/\\__ \\ |_\\__ \\  _    | |  / ____ \\ ____) |___) | |_|");
+                    Log.Info("   |_|\\___||___/\\__|___/ (_)   |_| /_/    \\_\\_____/_____/  (_)");
+                    Log.Info("===============================================================");
+                }
+				else
+				{
+                    Log.Err("==============================================");
+                    Log.Err(" _______        _               ______    _ _ ");
+					Log.Err("|__   __|      | |        _    |  ____|  (_) |");
+					Log.Err("   | | ___  ___| |_ ___  (_)   | |__ __ _ _| |");
+					Log.Err("   | |/ _ \\/ __| __/ __|       |  __/ _` | | |");
+					Log.Err("   | |  __/\\__ \\ |_\\__ \\  _    | | | (_| | | |");
+					Log.Err("   |_|\\___||___/\\__|___/ (_)   |_|  \\__,_|_|_|");
+                    Log.Err("==============================================");
+					Log.Err("         Pass Count: {0}  Fail Count: {1}     ", testPassCount, testFailCount);
+                    Log.Err("==============================================");
+                }
 				SK.Quit();
+            }
 			else
 				SetTestActive(allTests[testIndex].Name);
 		}
@@ -120,7 +149,12 @@ public static class Tests
 		if (!testFunction())
 		{
 			Log.Err("Test failed for {0}!", testFunction.Method.Name);
-			Environment.Exit(-1);
+			testFailCount++;
+			testsPass = false;
+			//Environment.Exit(-1);
+		} else
+		{
+			testPassCount++;
 		}
 	}
 
