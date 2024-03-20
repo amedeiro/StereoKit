@@ -17,7 +17,6 @@ public static class Tests
 	static int   sceneFrame = 0;
 	static float sceneTime  = 0;
 	static HashSet<string> screens = new HashSet<string>();
-	static bool testsPass = true;
 	static int testPassCount = 0;
 	static int testFailCount = 0;
 
@@ -82,7 +81,7 @@ public static class Tests
 			testIndex += 1;
 			if (testIndex >= allTests.Count || TestSingle)
 			{
-				if (testsPass)
+				if (testFailCount == 0)
 				{
                     Log.Info("===============================================================");
                     Log.Info(" _______        _               _____         _____ _____   _ ");
@@ -150,8 +149,6 @@ public static class Tests
 		{
 			Log.Err("Test failed for {0}!", testFunction.Method.Name);
 			testFailCount++;
-			testsPass = false;
-			//Environment.Exit(-1);
 		} else
 		{
 			testPassCount++;
