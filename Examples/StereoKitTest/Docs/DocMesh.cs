@@ -1,4 +1,5 @@
 using StereoKit;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,77 +7,85 @@ class DocMesh : ITest
 {
     Mesh testMesh = new Mesh();
 
-    bool TestMesh_VertCount()
+    bool TestMesh_SetInds()
     {
         Mesh mesh = new Mesh();
-        if (mesh.VertCount != 0)
-        {
-            Log.Err("Vert Count is not 0 in new Mesh");
-            return false;
-        }
-
-        Vertex[] verts_in = new Vertex[10];
-        for (int i = 0; i < 10; i++)
-        {
-            verts_in[i] = new Vertex(new Vec3(i,i,i), new Vec3(i,i,i), new Vec2(i,i), new Color32(0xa, 0xb, 0xc, 0xd));
-            mesh.SetVerts(verts_in, false);
-
-            if (mesh.VertCount != i+1)
-            {
-                Log.Err("Vert count is " + mesh.VertCount + " | Expected vert count: " + (i+1));
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    bool TestMesh_IndCount()
-    {
-        Mesh mesh = new Mesh();
-        if (mesh.IndCount != 0)
+        uint[] inds_in = new uint[3];
+        inds_in[0] = 0;
+        inds_in[1] = 1;
+        inds_in[2] = 2;
+        mesh.SetInds(inds_in);
+        if (mesh.IndCount != 3)
         {
             return false;
         }
-
-        for (int i = 0; i < 10; i++)
+        uint[] inds_out = mesh.GetInds();
+        foreach (uint i in mesh.GetInds())
         {
-            uint[] inds_in = new uint[3];
-            inds_in[0] = (uint)i;
-            mesh.SetInds(inds_in);
-
-            if (mesh.VertCount != i + 1)
+            if (inds_in[i] != inds_out[i])
             {
                 return false;
             }
         }
-
+        Log.Info("SetInds test method TestMesh_SetInds: Pass!");
         return true;
     }
-
-    bool TestMesh_GetVerts()
+    bool TestMesh_SetIndsNull()
     {
+        Mesh mesh = new Mesh();
+        try
+        {
+            mesh.SetInds(null);
+        }
+        catch(System.NullReferenceException e)
+        {
+            Log.Info("SetInds test method TestMesh_SetIndsNull: Pass!");
+            return true;
+        }
+        return false;
+    }
+
+    bool TestMesh_GenerateSphereValidDiameter()
+    {
+        Mesh mesh = Mesh.GenerateSphere(10,4);
+        if (mesh.VertCount != 216)
+        {
+            Log.Err("Sphere mesh has " + mesh.VertCount + " vertices, expected 216");
+            return false;
+        }
+        Log.Info("Sphere mesh test method TestMesh_GenerateSphereValidDiameter: Pass!");
         return true;
     }
-    
-    bool TestMesh_SetGetInds() {
-        Mesh mesh = new Mesh();
-        //mesh.SetInds(); 
-        return true; 
+    bool TestMesh_GenerateSphereNegatives()
+    {
+        Mesh mesh = Mesh.GenerateSphere(-1, -4);
+        if (mesh.VertCount != 24)
+        {
+            Log.Err("Sphere mesh has " + mesh.VertCount + " vertices, expected 24");
+            return false;
+        }
+        Log.Info("Sphere mesh test method TestMesh_GenerateSphereNegatives: Pass!");
+        return true;
     }
-
-    bool TestMesh_SetGetData() {
-        Mesh mesh = new Mesh();
-        //mesh.SetData(); //verts and inds
-        return true; 
+    bool TestMesh_GenerateSphereValidFloatDiameter()
+    {
+        try
+        {
+            Mesh mesh = Mesh.GenerateSphere(10.5f, 40);
+        }catch(System.ArgumentException e)
+        {
+            return false;
+        }
+        Log.Info("Sphere mesh test method TestMesh_GenerateSphereValidFloatDiameter: Pass!");
+        return true;
     }
-
     public void Initialize()
     {
-        Tests.Test(TestMesh_VertCount);
-        Tests.Test(TestMesh_IndCount);
-        Tests.Test(TestMesh_SetGetInds);
-        Tests.Test(TestMesh_SetGetData);
+        Tests.Test(TestMesh_SetInds);
+        Tests.Test(TestMesh_SetIndsNull);
+        Tests.Test(TestMesh_GenerateSphereValidDiameter);
+        Tests.Test(TestMesh_GenerateSphereNegatives);
+        Tests.Test(TestMesh_GenerateSphereValidFloatDiameter);
     }
 
     public void Shutdown(){}
