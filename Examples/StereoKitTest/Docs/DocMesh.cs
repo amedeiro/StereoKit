@@ -7,51 +7,78 @@ class DocMesh : ITest
 {
     Mesh mesh = new Mesh();
 
-    bool TestMesh_VertCount()
+    bool TestMesh_SetInds()
     {
-        mesh = new Mesh();
-        if (mesh.VertCount != 0)
+        Mesh mesh = new Mesh();
+        uint[] inds_in = new uint[3];
+        inds_in[0] = 0;
+        inds_in[1] = 1;
+        inds_in[2] = 2;
+        mesh.SetInds(inds_in);
+        if (mesh.IndCount != 3)
         {
-            Log.Err("Vert Count is not 0 in new Mesh");
             return false;
         }
-
-        Vertex[] verts_in = new Vertex[10];
-        for (int i = 0; i < 10; i++)
+        uint[] inds_out = mesh.GetInds();
+        foreach (uint i in mesh.GetInds())
         {
-            verts_in[i] = new Vertex(new Vec3(i,i,i), new Vec3(i,i,i), new Vec2(i,i), new Color32(0xa, 0xb, 0xc, 0xd));
-            mesh.SetVerts(verts_in, false);
-
-            if (mesh.VertCount != i+1)
+            if (inds_in[i] != inds_out[i])
             {
-                Log.Err("Vert count is " + mesh.VertCount + " | Expected vert count: " + (i+1));
                 return false;
             }
         }
-
+        Log.Info("TestMesh_SetInds: Pass!");
         return true;
     }
 
-    bool TestMesh_IndCount()
+    bool TestMesh_SetIndsNull()
     {
-        mesh = new Mesh();
-        if (mesh.IndCount != 0)
+        Mesh mesh = new Mesh();
+        try
+        {
+            mesh.SetInds(null);
+        }
+        catch(System.NullReferenceException e)
+        {
+            Log.Info("TestMesh_SetIndsNull: Pass!");
+            return true;
+        }
+        return false;
+    }
+
+    bool TestMesh_GenerateSphereValidDiameter()
+    {
+        Mesh mesh = Mesh.GenerateSphere(10,4);
+        if (mesh.VertCount != 216)
+        {
+            Log.Err("Sphere mesh has " + mesh.VertCount + " vertices, expected 216");
+            return false;
+        }
+        Log.Info("TestMesh_GenerateSphereValidDiameter: Pass!");
+        return true;
+    }
+    bool TestMesh_GenerateSphereNegatives()
+    {
+        Mesh mesh = Mesh.GenerateSphere(-1, -4);
+        if (mesh.VertCount != 24)
+        {
+            Log.Err("Sphere mesh has " + mesh.VertCount + " vertices, expected 24");
+            return false;
+        }
+        Log.Info("TestMesh_GenerateSphereNegatives: Pass!");
+        return true;
+    }
+    bool TestMesh_GenerateSphereValidFloatDiameter()
+    {
+        try
+        {
+            Mesh mesh = Mesh.GenerateSphere(10.5f, 40);
+        }
+        catch (System.ArgumentException e)
         {
             return false;
         }
-
-        for (int i = 0; i < 10; i++)
-        {
-            uint[] inds_in = new uint[3];
-            inds_in[0] = (uint)i;
-            mesh.SetInds(inds_in);
-
-            if (mesh.VertCount != i + 1)
-            {
-                return false;
-            }
-        }
-
+        Log.Info("TestMesh_GenerateSphereValidFloatDiameter: Pass!");
         return true;
     }
 
@@ -261,8 +288,11 @@ class DocMesh : ITest
 
     public void Initialize()
     {
-        //Run Tests
-        //Tests.Test(TestMesh_VertCount);
+        Tests.Test(TestMesh_SetInds);
+        Tests.Test(TestMesh_SetIndsNull);
+        Tests.Test(TestMesh_GenerateSphereValidDiameter);
+        Tests.Test(TestMesh_GenerateSphereNegatives);
+        Tests.Test(TestMesh_GenerateSphereValidFloatDiameter);
         Tests.Test(TestMesh_Intersect_True);
         Tests.Test(TestMesh_Intersect_False);
         Tests.Test(TestMesh_Intersect_True_FullOutRay);
